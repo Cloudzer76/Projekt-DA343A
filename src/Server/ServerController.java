@@ -19,7 +19,7 @@ public class ServerController {
     public ServerController() {
         this.serverGUI = new ServerGUI("Server");
         this.model = new ModelConsumption();
-        this.server = new Server(4321, model, serverGUI);
+        this.server = new Server(1025, model, serverGUI);
 
         serverGUI.setOnExitingCallback(this::stopServer);
         SwingUtilities.invokeLater(serverGUI::createAndShowUI);
@@ -48,13 +48,18 @@ public class ServerController {
         timer.start();
     }
 
+    private Thread serverThread;
+
     private void startServer() {
-        Thread serverThread = new Thread(server);
+        serverThread = new Thread(server);
         serverThread.start();
     }
 
     private void stopServer() {
         server.stop();
+        if (serverThread != null) {
+            serverThread.interrupt();
+        }
     }
 
     public static void main(String[] args) {
