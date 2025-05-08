@@ -4,6 +4,7 @@ import Integration.ConnectionHandler;
 import Integration.ModelConsumption;
 import se.mau.DA343A.VT25.projekt.ServerGUI;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -28,18 +29,48 @@ public class Server implements Runnable {
     @Override
     public void run() {
         try {
-            //lägg till koppla klienter --> koppla till connectionhandler
+            serverSocket = new ServerSocket(port);
+            log("Server has started on port: " + port);
+            while (running) {
+                try {
+                    Socket clientSocket = serverSocket.accept();
+                    log("Client is connected: " + clientSocket.getRemoteSocketAddress());
+                    executor.submit(new ConnectionHandler(clientSocket, model, gui));
+                } catch (IOException e) {
+                    if (running) {
+                        log("Problem with connecting client - " + e.getMessage());
+                    }
+
+                }
+
+            }
+        } catch (IOException e) {
+            log("Problem with starting the server - " + e.getMessage());
+        } finally {
+            stop();
+
         }
     }
 
     public void stop() {
         running = false;
         try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+                log("Server has stopped");
+            }
+
+        } catch (IOException e) {
+            log("Problem stopping server - " + e.getMessage());
 
         }
+
+        executor.shutdownNow();
+
     }
-
-
+    private void log(String message) {
+        SwingUtilities.invokeLater(() -> gui.addLogMessage(message));
+    }
 
 }
 
