@@ -2,8 +2,8 @@ package Client;
 
 import se.mau.DA343A.VT25.projekt.Buffer;
 
-/*3. It needs to be possible to start multiple clients simultaneously, representing di\erent
-household appliances (with di\erent names). It is allowed if multiple clients are run as either:
+/*3. It needs to be possible to start multiple clients simultaneously, representing different
+household appliances (with different names). It is allowed if multiple clients are run as either:
 (a) separate processes
 (b) within the same process.
  5. Each client has a power consumption (adjustable in the GUI), a maximum power consumption

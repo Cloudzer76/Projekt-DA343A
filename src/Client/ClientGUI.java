@@ -38,8 +38,7 @@ public class ClientGUI extends JFrame implements ChangeListener {
         jlabelAppliance = new JLabel(appliances.getApplianceName());
 
         jSliderWatt = new JSlider(JSlider.HORIZONTAL, 0, appliances.getApplianceWatt(), 0);
-        jSliderWatt.setPaintTrack(true);
-        jSliderWatt.setPaintTicks(true);
+        
         jSliderWatt.setPaintLabels(true);
 
 

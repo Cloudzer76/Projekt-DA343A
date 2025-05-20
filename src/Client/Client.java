@@ -13,9 +13,11 @@ server application (use java.net.Socket for the client side).
 electrical appliance and initial consumption value need to be sent over this TCP connection.
  10. The TCP connection remains open until the client is closed */
 
-public class Client implements Runnable { //Innehåller logik för trådar
+public class Client implements Runnable {
     private Appliances appliance;
     private Buffer buffer;
+    private volatile boolean running = true;
+    private Socket socket;
 
     public Client (Appliances appliance, Buffer buffer) {
         this.appliance = appliance;
@@ -24,28 +26,40 @@ public class Client implements Runnable { //Innehåller logik för trådar
 
     @Override
 
-    public void run() {          //Hämta från Buffer och skicka
+    public void run() {
 
-        try {                    //Anslut till Server
-            Socket socket = new Socket("localhost", 1025);
+        try {
+            socket = new Socket("localhost", 1025);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             writer.write("Grupp 31");
             writer.write(appliance.getApplianceName());
             writer.write(appliance.getApplianceWatt());
 
+            writer.flush();
 
-            writer.flush();              //Ser till så att allt har skickats
+            while (running) {
 
-            while (true) {       //Skicka nya ändrade watt värden från BUffer till server, stäng anslutningen när klienten stängs.
+              int newWatt = (int) buffer.get();
 
+              writer.write (String.valueOf(newWatt));
 
 
                writer.flush();
             }
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public void stop () throws IOException {
+
+        running = false;
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+        }
+
 
     }
 
