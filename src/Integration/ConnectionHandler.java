@@ -3,6 +3,7 @@ package Integration;
 import se.mau.DA343A.VT25.projekt.ServerGUI;
 import se.mau.DA343A.VT25.projekt.net.SecurityTokens;
 
+import javax.swing.*;
 import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,19 +22,22 @@ public class ConnectionHandler implements Runnable {
         this.gui = gui;
     }
 
+    private void log(String msg) {
+        SwingUtilities.invokeLater(() -> gui.addLogMessage(msg));
+    }
     @Override
     public void run() {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
             String token = in.readLine();
             if (!TOKEN.verifyToken(token)) {
-                gui.addLogMessage("Invalid token, disconnecting");
+                log("Invalid token, disconnecting");
                 return;
             }
 
             String name = in.readLine();
             if (name == null || name.isBlank()) {
-                gui.addLogMessage("Appliance name is missing, disconnecting");
+                log("Appliance name is missing, disconnecting");
                 return;
             }
 
@@ -42,19 +46,20 @@ public class ConnectionHandler implements Runnable {
                 try {
                     int watts = Integer.parseInt(line.trim());
                     model.put(name, watts);
+                    log(name + " " + watts + " W");
                 }
                 catch (NumberFormatException ignored) {
-                    gui.addLogMessage("Invalid watt value: " + line + " from " + name);
+                    log("Invalid watt value: " + line + " from " + name);
                 }
             }
 
         } catch (IOException e) {
-            gui.addLogMessage("Client error: " + e.getMessage());
+            log("Client error: " + e.getMessage());
         } finally {
             try {
                 socket.close();
             } catch (IOException ignored) {}
-            gui.addLogMessage("Client disconnected");
+            log("Client disconnected");
         }
     }
 }

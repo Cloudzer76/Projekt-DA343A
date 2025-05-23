@@ -1,6 +1,7 @@
 package Client;
 
 import se.mau.DA343A.VT25.projekt.Buffer;
+import se.mau.DA343A.VT25.projekt.net.SecurityTokens;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class Client implements Runnable {
     private Buffer buffer;
     private volatile boolean running = true;
     private Socket socket;
+    private final SecurityTokens tokens = new SecurityTokens("Grupp31");
 
     public Client (Appliances appliance, Buffer buffer) {
         this.appliance = appliance;
@@ -31,9 +33,12 @@ public class Client implements Runnable {
         try {
             socket = new Socket("localhost", 1025);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            writer.write("Grupp 31");
+            writer.write(tokens.generateToken());
+            writer.newLine();
             writer.write(appliance.getApplianceName());
-            writer.write(appliance.getApplianceWatt());
+            writer.newLine();
+            writer.write(Integer.toString(appliance.getApplianceWatt()));
+            writer.newLine();
 
             writer.flush();
 
@@ -42,9 +47,9 @@ public class Client implements Runnable {
               int newWatt = (int) buffer.get();
 
               writer.write (String.valueOf(newWatt));
+              writer.newLine();
 
-
-               writer.flush();
+              writer.flush();
             }
 
         } catch (IOException | InterruptedException e) {
