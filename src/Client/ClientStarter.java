@@ -39,6 +39,13 @@ public class ClientStarter {
         Client clientRef  = new Client(refrigerator, guiRef.buffer);
         Client clientMicro = new Client(microwave, guiMicro.buffer);
 
+        guiLaptop.setClient(clientLaptop);
+        guiLED.setClient(clientLED);
+        guiLight.setClient(clientLight);
+        guiDesk.setClient(clientDesk);
+        guiTV.setClient(clientTv);
+        guiRef.setClient(clientRef);
+        guiMicro.setClient(clientMicro);
 
         Thread laptopThread = new Thread(clientLaptop);
         laptopThread.start();

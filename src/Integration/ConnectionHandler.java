@@ -27,15 +27,15 @@ public class ConnectionHandler implements Runnable {
     }
     @Override
     public void run() {
+        String name = null;
         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
             String token = in.readLine();
             if (!TOKEN.verifyToken(token)) {
                 log("Invalid token, disconnecting");
                 return;
             }
 
-            String name = in.readLine();
+            name = in.readLine();
             if (name == null || name.isBlank()) {
                 log("Appliance name is missing, disconnecting");
                 return;
@@ -59,6 +59,7 @@ public class ConnectionHandler implements Runnable {
             try {
                 socket.close();
             } catch (IOException ignored) {}
+            model.remove(name);
             log("Client disconnected");
         }
     }

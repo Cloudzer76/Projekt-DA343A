@@ -5,6 +5,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import se.mau.DA343A.VT25.projekt.Buffer;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 /* 1. Crete a client application with a simple GUI represents a single electrical appliance.
  2. Implement the client GUI yourself, using SWING. It must include:
 (a) A javax.swing.JSlider to control the power consumption level.
@@ -25,15 +28,26 @@ public class ClientGUI extends JFrame implements ChangeListener {
     private JSlider jSliderWatt;
     private JPanel mainPanel;
     private JLabel powerLabel;
+    private Client client;
 
 
     public ClientGUI (Appliances appliances) {
         buffer = new Buffer();
-
-
         setTitle("Client GUI");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400,200);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                if(client != null) {
+                    try {
+                        client.stop();
+                    } catch (Exception ex) {
+                    ex.printStackTrace();
+                    }
+                }
+            }
+        });
 
         jlabelAppliance = new JLabel(appliances.getApplianceName());
 
@@ -64,6 +78,9 @@ public class ClientGUI extends JFrame implements ChangeListener {
 
     }
 
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
     @Override
     public void stateChanged(ChangeEvent e) {  // Use a javax.swing.event.ChangeListener callback to monitor the JSlider in the GUI for changes

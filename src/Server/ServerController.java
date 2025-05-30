@@ -5,6 +5,7 @@ import se.mau.DA343A.VT25.projekt.ServerGUI;
 import se.mau.DA343A.VT25.projekt.LiveXYSeries;
 
 import javax.swing.*;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,6 +42,12 @@ public class ServerController {
                     SwingUtilities.invokeLater(() -> serverGUI.addSeries(series));
                     return series;
                 }).addValue(now, watts);
+            }
+            for (String seriesName : new HashSet<>(liveSeriesMap.keySet())) {
+                if (!model.getCurrentConsumption().containsKey(seriesName)) {
+                    LiveXYSeries<Double> series = liveSeriesMap.get(seriesName);
+                    SwingUtilities.invokeLater(() -> series.addValue(now, 0.0));
+                }
             }
 
             serverGUI.setTotalConsumption(total);

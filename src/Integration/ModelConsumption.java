@@ -13,5 +13,9 @@ public class ModelConsumption {
     public Map<String,Double> getCurrentConsumption() {
         return Map.copyOf(map);
     }
+
+    public void remove(String name) {
+    map.remove(name);
+    }
 }
 
